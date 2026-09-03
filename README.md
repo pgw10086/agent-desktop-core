@@ -13,7 +13,6 @@ Core。这样两个产品共用相同的启动、就绪探测、崩溃恢复和 
 
 本仓库拥有独立 Git、lockfile、测试和 package 制品。当前版本仍标记为 private candidate；
 在确定私有 registry、远端仓库和两个产品的兼容性矩阵前，不发布到远端 registry。
-本次从原仓库抽取的来源和后续事实归属见 [MIGRATION.md](MIGRATION.md)。
 
 常用命令：
 
