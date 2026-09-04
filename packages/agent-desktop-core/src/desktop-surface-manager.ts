@@ -324,4 +324,7 @@ function validateDefinition(definition: DesktopSurfaceDefinition): void {
   if (definition.content.type === 'plugin-view' && definition.content.viewId?.trim().length === 0) {
     throw new DesktopSurfaceError('INVALID_DEFINITION', `Surface "${definition.id}" viewId 不能为空`)
   }
+  if (definition.content.type === 'runtime-view' && (typeof definition.content.runtimeId !== 'string' || definition.content.runtimeId.trim().length === 0)) {
+    throw new DesktopSurfaceError('INVALID_DEFINITION', `Surface "${definition.id}" runtimeId 不能为空`)
+  }
 }

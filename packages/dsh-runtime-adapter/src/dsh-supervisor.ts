@@ -3,16 +3,10 @@ import { EventEmitter, once } from "node:events";
 import { execFile } from "node:child_process";
 import { extractDshWebUrl, waitForHttpReady } from "./dsh-readiness.js";
 import type { DshCommand } from "./dsh-process-contract.js";
+import type { AgentRuntimeAdapter, AgentRuntimeState } from "@platform/agent-desktop-core";
 
 /** DSH 子进程监督器状态；unavailable 是达到重试预算后的明确终态。 */
-export type DshRuntimeState =
-  | "idle"
-  | "starting"
-  | "ready"
-  | "stopping"
-  | "stopped"
-  | "recovering"
-  | "unavailable";
+export type DshRuntimeState = AgentRuntimeState;
 
 export interface DshReadyEvent {
   /** 产生 ready 事件的监督 generation。 */
@@ -120,7 +114,7 @@ async function waitForProcessGroupExit(pid: number, timeoutMs: number): Promise<
   return true;
 }
 
-export class DshSupervisor extends EventEmitter {
+export class DshSupervisor extends EventEmitter implements AgentRuntimeAdapter {
   readonly #options: Required<
     Pick<
       DshSupervisorOptions,
@@ -140,6 +134,8 @@ export class DshSupervisor extends EventEmitter {
   #transition: Promise<URL> | undefined;
   #readyUrl: URL | undefined;
   #crashRestarts = 0;
+
+  readonly runtimeId = "dsh";
 
   constructor(options: DshSupervisorOptions) {
     super();

@@ -32,7 +32,9 @@ export interface DesktopSurfaceDefinition {
   readonly id: string
   readonly kind: SurfaceKind
   readonly content: {
-    readonly type: 'dsh-conversation' | 'plugin-view'
+    /** runtime-view 由具体 Agent Runtime adapter 解释，Core 不绑定某个 runtime。 */
+    readonly type: 'runtime-view' | 'plugin-view'
+    readonly runtimeId?: string
     readonly viewId?: string
     readonly contract?: number
   }
