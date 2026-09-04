@@ -2,7 +2,7 @@ import type { BrowserWindow, IpcMain, IpcMainInvokeEvent, WebContents } from 'el
 import type { ShortcutRegistry } from './shortcut-registry.js'
 
 /** DSH 主窗口读取 Desktop Core 快捷键目录所用的独立 IPC 通道。 */
-export const DESKTOP_SHORTCUT_IPC_CHANNEL = 'hermit:desktop-shortcuts'
+export const DESKTOP_SHORTCUT_IPC_CHANNEL = 'desktop:shortcuts'
 
 type ShortcutRequest =
   | { readonly op: 'list' }

@@ -6,8 +6,8 @@ import {
 import type { DesktopDeadlineService } from './desktop-deadline-service.js'
 import type { DesktopNotificationService } from './desktop-notification-service.js'
 
-export const DESKTOP_DEADLINE_IPC_CHANNEL = 'hermit:desktop-deadlines'
-export const DESKTOP_NOTIFICATION_IPC_CHANNEL = 'hermit:desktop-notifications'
+export const DESKTOP_DEADLINE_IPC_CHANNEL = 'desktop:deadlines'
+export const DESKTOP_NOTIFICATION_IPC_CHANNEL = 'desktop:notifications'
 
 type DeadlineRequest =
   | { readonly op: 'arm'; readonly input: DesktopDeadlineInput }

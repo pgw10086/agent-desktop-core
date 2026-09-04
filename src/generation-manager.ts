@@ -11,7 +11,7 @@ export interface RuntimeGenerationManifest {
   readonly schemaVersion: 1;
   /** generation 稳定身份，与目录名一致。 */
   readonly generationId: string;
-  /** Hermit runtime 版本。 */
+  /** Product Desktop runtime 版本。 */
   readonly runtimeVersion: string;
   /** bundled Node 版本。 */
   readonly nodeVersion: string;

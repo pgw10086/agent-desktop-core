@@ -1,8 +1,8 @@
 {
-  "name": "@hermit/desktop-core",
+  "name": "@platform/desktop-core",
   "version": "0.1.0",
   "packageManager": "pnpm@11.0.0",
-  "description": "Hermit Desktop Core typed capabilities and Electron platform adapters",
+  "description": "Shared Product Desktop Core typed capabilities and Electron platform adapters",
   "repository": "https://github.com/pgw10086/desktop-core.git",
   "private": true,
   "type": "module",

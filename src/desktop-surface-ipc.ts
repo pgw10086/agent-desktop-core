@@ -7,7 +7,7 @@ import {
   type DesktopSurfaceResult,
 } from './desktop-surface-contract.js'
 
-export const DESKTOP_SURFACE_IPC_CHANNEL = 'hermit:desktop-surface'
+export const DESKTOP_SURFACE_IPC_CHANNEL = 'desktop:surface'
 
 type DesktopSurfaceIpcRequest =
   | { readonly op: 'open' | 'toggle'; readonly id: string; readonly options?: DesktopSurfaceOpenOptions }

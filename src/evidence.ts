@@ -17,14 +17,14 @@ export function createEvidenceSink(
   userData: string,
   environment: NodeJS.ProcessEnv = process.env,
 ): EvidenceSink {
-  const configured = environment.HERMIT_EVIDENCE_FILE;
+  const configured = environment.DESKTOP_CORE_EVIDENCE_FILE;
   if (configured === undefined || configured.trim() === "") return noopEvidenceSink;
 
   const root = canonicalizePotentialPath(userData);
   const file = canonicalizePotentialPath(configured);
   const relative = path.relative(root, file);
   if (relative === "" || relative.startsWith("..") || path.isAbsolute(relative)) {
-    console.error("HERMIT_EVIDENCE_FILE 必须位于当前 Hermit userData 内，已禁用证据记录");
+    console.error("DESKTOP_CORE_EVIDENCE_FILE 必须位于当前 Product Desktop userData 内，已禁用证据记录");
     return noopEvidenceSink;
   }
 
@@ -32,7 +32,7 @@ export function createEvidenceSink(
     fs.mkdirSync(path.dirname(file), { recursive: true });
     return new JsonlEvidenceSink(file);
   } catch (cause) {
-    console.error(`Hermit 证据文件初始化失败，已禁用记录: ${errorMessage(cause)}`);
+    console.error(`Desktop Core 证据文件初始化失败，已禁用记录: ${errorMessage(cause)}`);
     return noopEvidenceSink;
   }
 }
@@ -76,7 +76,7 @@ class JsonlEvidenceSink implements EvidenceSink {
     } catch (cause) {
       // 证据通道只观察生产路径，失败时不能改变桌面动作或退出流程。
       this.#enabled = false;
-      console.error(`Hermit 证据记录失败，后续记录已禁用: ${errorMessage(cause)}`);
+      console.error(`Desktop Core 证据记录失败，后续记录已禁用: ${errorMessage(cause)}`);
     } finally {
       if (descriptor !== undefined) fs.closeSync(descriptor);
     }
