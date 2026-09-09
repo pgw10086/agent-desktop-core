@@ -2,6 +2,7 @@ import type { BrowserWindow, IpcMain, IpcMainInvokeEvent, WebContents } from 'el
 import type { DesktopSurfaceManager } from './desktop-surface-manager.js'
 import {
   DesktopSurfaceError,
+  type DesktopSurfaceCloseOptions,
   type DesktopSurfaceOpenOptions,
   type DesktopMainSessionResult,
   type DesktopSurfaceResult,
@@ -12,7 +13,7 @@ export const DESKTOP_SURFACE_IPC_CHANNEL = 'desktop:surface'
 type DesktopSurfaceIpcRequest =
   | { readonly op: 'open' | 'toggle'; readonly id: string; readonly options?: DesktopSurfaceOpenOptions }
   | { readonly op: 'resize'; readonly id: string; readonly size: { readonly width: number; readonly height: number } }
-  | { readonly op: 'close'; readonly id: string }
+  | { readonly op: 'close'; readonly id: string; readonly options?: DesktopSurfaceCloseOptions }
   | { readonly op: 'open-main-session'; readonly sessionId: string }
   | { readonly op: 'capabilities' }
 
@@ -56,7 +57,8 @@ export function registerDesktopSurfaceIpc(options: {
         options.surfaceManager.resize(request.id, request.size)
         return { status: 'resized', id: request.id } satisfies DesktopSurfaceResult
       }
-      await options.surfaceManager.close(request.id)
+      if (request.op !== 'close') throw new Error('Desktop Surface op 无效')
+      await options.surfaceManager.close(request.id, request.options)
       return { status: 'closed', id: request.id } satisfies DesktopSurfaceResult
     } catch (cause) {
       const error = cause instanceof DesktopSurfaceError
@@ -94,12 +96,27 @@ export function parseDesktopSurfaceRequest(value: unknown): DesktopSurfaceIpcReq
   if (typeof record.id !== 'string' || record.id.trim().length === 0 || record.id.length > 128) {
     throw new Error('Desktop Surface id 无效')
   }
-  if (record.op === 'close') return { op: 'close', id: record.id.trim() }
+  if (record.op === 'close') {
+    return {
+      op: 'close',
+      id: record.id.trim(),
+      ...(record.options === undefined ? {} : { options: parseCloseOptions(record.options) }),
+    }
+  }
   return {
     op: record.op,
     id: record.id.trim(),
     ...(record.options === undefined ? {} : { options: parseOpenOptions(record.options) }),
   }
+}
+
+function parseCloseOptions(value: unknown): DesktopSurfaceCloseOptions {
+  if (typeof value !== 'object' || value === null) throw new Error('Desktop Surface close options 无效')
+  const disposition = (value as Record<string, unknown>).disposition
+  if (disposition !== 'restore-previous' && disposition !== 'keep-current' && disposition !== 'external-handoff') {
+    throw new Error('Desktop Surface close disposition 无效')
+  }
+  return { disposition }
 }
 
 function parseOpenOptions(value: unknown): DesktopSurfaceOpenOptions {

@@ -27,6 +27,11 @@
 - 不绑定具体 Agent 的 `AgentRuntimeAdapter` 生命周期接口；
 - 受控的 evidence 记录和平台能力结果。
 
+Surface 的临时焦点恢复由 Core 统一编排：打开前创建一次 `DesktopFocusLease`，关闭时按
+`restore-previous`、`keep-current` 或 `external-handoff` 处理。Core 只调用抽象的
+`DesktopFocusPort`，外部应用身份和平台激活细节由 Product Desktop 注入；同一产品进程内已有
+窗口优先由 Core 恢复。焦点租约与 Surface 打开代际绑定，关闭幂等，`blur` 不能递归触发第二次关闭。
+
 Core 只承载桌面平台能力，不保存产品业务数据，不解释 Agent 的业务协议。
 
 ## `@platform/dsh-runtime-adapter` 负责什么

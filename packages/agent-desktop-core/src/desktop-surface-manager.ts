@@ -1,7 +1,12 @@
 import type { BrowserWindow, BrowserWindowConstructorOptions } from 'electron'
 import type {
+  DesktopFocusLease,
+  DesktopFocusPort,
+  DesktopFocusRestoreResult,
   DesktopSurfaceCapabilities,
+  DesktopSurfaceCloseOptions,
   DesktopSurfaceDefinition,
+  DesktopSurfaceDismissDisposition,
   DesktopSurfaceHandle,
   DesktopSurfaceOpenOptions,
   DesktopSurfaceSize,
@@ -30,9 +35,12 @@ interface SurfaceEntry {
   loadedSessionKey: string | undefined
   openGeneration: number
   opening: boolean
+  closing: Promise<void> | undefined
+  closingRequested: boolean
   visible: boolean
   closingUntil: number
   disposed: boolean
+  focusLease: DesktopFocusLease | undefined
   rememberedBounds: { readonly x: number; readonly y: number; readonly width: number; readonly height: number } | undefined
 }
 
@@ -44,13 +52,22 @@ export class DesktopSurfaceManager {
   readonly #entries = new Map<string, SurfaceEntry>()
   readonly #onVisibilityChanged: ((id: string, visible: boolean) => void) | undefined
   readonly #createWindow: (options: BrowserWindowConstructorOptions) => BrowserWindow
+  readonly #focusPort: DesktopFocusPort | undefined
+  readonly #getFocusedWindow: (() => BrowserWindow | null) | undefined
+  readonly #onFocusRestore: ((id: string, disposition: DesktopSurfaceDismissDisposition, result: DesktopFocusRestoreResult) => void) | undefined
 
   constructor(options: {
     readonly createWindow: (options: BrowserWindowConstructorOptions) => BrowserWindow
+    readonly getFocusedWindow?: () => BrowserWindow | null
+    readonly focusPort?: DesktopFocusPort
+    readonly onFocusRestore?: (id: string, disposition: DesktopSurfaceDismissDisposition, result: DesktopFocusRestoreResult) => void
     readonly onVisibilityChanged?: (id: string, visible: boolean) => void
   }) {
     this.#onVisibilityChanged = options.onVisibilityChanged
     this.#createWindow = options.createWindow
+    this.#focusPort = options.focusPort
+    this.#getFocusedWindow = options.getFocusedWindow
+    this.#onFocusRestore = options.onFocusRestore
   }
 
   register(definition: DesktopSurfaceDefinition, host: DesktopSurfaceHostDefinition): () => void {
@@ -69,9 +86,12 @@ export class DesktopSurfaceManager {
       loadedSessionKey: undefined,
       openGeneration: 0,
       opening: false,
+      closing: undefined,
+      closingRequested: false,
       visible: false,
       closingUntil: 0,
       disposed: false,
+      focusLease: undefined,
       rememberedBounds: undefined,
     }
     this.#entries.set(definition.id, entry)
@@ -89,6 +109,7 @@ export class DesktopSurfaceManager {
     })
     window.on('closed', () => {
       entry.disposed = true
+      this.disposeFocusLease(entry)
       this.setVisible(entry, false)
       this.#entries.delete(definition.id)
       this.emit(entry, 'destroyed', undefined)
@@ -96,7 +117,7 @@ export class DesktopSurfaceManager {
     window.on('move', () => this.rememberBounds(entry))
     window.on('resize', () => this.rememberBounds(entry))
     if (host.hideOnBlur === true) window.on('blur', () => {
-      if (!window.isDestroyed()) void this.close(definition.id)
+      if (!window.isDestroyed() && !entry.closingRequested) void this.close(definition.id)
     })
 
     if (host.eagerLoad === true) {
@@ -109,8 +130,13 @@ export class DesktopSurfaceManager {
 
   async open(id: string, options: DesktopSurfaceOpenOptions = {}): Promise<DesktopSurfaceHandle> {
     const entry = this.require(id)
+    if (entry.closing !== undefined) await entry.closing
     const ownsOpen = !entry.opening
     if (ownsOpen) entry.opening = true
+    const focusCaptured = ownsOpen
+      && entry.focusLease === undefined
+      && entry.definition.window?.focus !== 'no-activate'
+    if (focusCaptured) entry.focusLease = this.captureFocusLease(entry)
     const freshSession = options.session?.type === 'new-on-submit'
       || options.session === undefined
         && entry.definition.session?.type === 'new-on-submit'
@@ -146,6 +172,9 @@ export class DesktopSurfaceManager {
       if (options.focus !== 'no-activate' && entry.definition.window?.focus !== 'no-activate') entry.window.focus()
       entry.host.onShown?.(entry.window)
       return this.handle(entry)
+    } catch (cause) {
+      if (focusCaptured) this.disposeFocusLease(entry)
+      throw cause
     } finally {
       if (ownsOpen) entry.opening = false
     }
@@ -166,12 +195,25 @@ export class DesktopSurfaceManager {
     this.setSize(entry, size)
   }
 
-  async close(id: string): Promise<void> {
+  async close(id: string, options: DesktopSurfaceCloseOptions = {}): Promise<void> {
     const entry = this.require(id)
     if (entry.window.isDestroyed()) return
-    entry.closingUntil = Date.now() + SURFACE_ACTIVATION_GUARD_MS
-    entry.window.hide()
-    entry.host.onHidden?.(entry.window)
+    if (entry.closing !== undefined) return entry.closing
+    entry.closingRequested = true
+    let resolveClosing!: () => void
+    let rejectClosing!: (cause: unknown) => void
+    const closing = new Promise<void>((resolve, reject) => {
+      resolveClosing = resolve
+      rejectClosing = reject
+    })
+    entry.closing = closing
+    void this.finishClose(entry, options.disposition ?? entry.definition.window?.dismiss ?? 'keep-current')
+      .then(resolveClosing, rejectClosing)
+      .finally(() => {
+        if (entry.closing === closing) entry.closing = undefined
+        entry.closingRequested = false
+      })
+    return closing
   }
 
   /** 只供 Desktop Core 内部适配器使用；插件拿到的 API 不包含窗口对象。 */
@@ -209,7 +251,7 @@ export class DesktopSurfaceManager {
         'window-movable': process.platform !== 'linux',
         'window-resizable': true,
         'window-chrome': true,
-        'focus-restore': true,
+        'focus-restore': this.#focusPort !== undefined || this.#getFocusedWindow !== undefined,
       },
     }
   }
@@ -219,8 +261,58 @@ export class DesktopSurfaceManager {
     if (entry === undefined || entry.disposed) return
     entry.disposed = true
     this.#entries.delete(id)
+    this.disposeFocusLease(entry)
     if (!entry.window.isDestroyed()) entry.window.destroy()
     entry.listeners.clear()
+  }
+
+  /** 优先恢复本进程窗口；没有本地窗口时才请求平台适配器恢复外部应用。 */
+  private captureFocusLease(entry: SurfaceEntry): DesktopFocusLease | undefined {
+    const focusedWindow = this.#getFocusedWindow?.()
+    if (focusedWindow !== undefined && focusedWindow !== null && focusedWindow !== entry.window && !focusedWindow.isDestroyed()) {
+      return {
+        restore: async () => {
+          if (focusedWindow.isDestroyed()) return { status: 'unavailable', reason: '原窗口已经销毁' }
+          focusedWindow.show()
+          focusedWindow.focus()
+          return { status: 'restored' }
+        },
+        dispose: () => undefined,
+      }
+    }
+    try {
+      return this.#focusPort?.capture()
+    } catch (cause) {
+      console.error(`Surface "${entry.definition.id}" 焦点捕获失败: ${cause instanceof Error ? cause.message : String(cause)}`)
+      return undefined
+    }
+  }
+
+  private disposeFocusLease(entry: SurfaceEntry): void {
+    const lease = entry.focusLease
+    entry.focusLease = undefined
+    lease?.dispose()
+  }
+
+  /** 关闭窗口后按 disposition 处理一次性焦点租约；恢复失败不阻断窗口关闭。 */
+  private async finishClose(entry: SurfaceEntry, disposition: DesktopSurfaceDismissDisposition): Promise<void> {
+    entry.closingUntil = Date.now() + SURFACE_ACTIVATION_GUARD_MS
+    entry.window.hide()
+    entry.host.onHidden?.(entry.window)
+    const lease = entry.focusLease
+    entry.focusLease = undefined
+    try {
+      if (lease === undefined || disposition !== 'restore-previous' || entry.disposed) return
+      let result: DesktopFocusRestoreResult
+      try {
+        result = await lease.restore()
+      } catch (cause) {
+        result = { status: 'unavailable', reason: cause instanceof Error ? cause.message : String(cause) }
+      }
+      this.#onFocusRestore?.(entry.definition.id, disposition, result)
+    } finally {
+      lease?.dispose()
+    }
   }
 
   private async ensureLoaded(

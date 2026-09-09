@@ -1,6 +1,6 @@
 {
   "name": "@platform/agent-desktop-core",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packageManager": "pnpm@11.0.0",
   "description": "Shared Electron desktop foundation for AI agent products",
   "repository": "https://github.com/pgw10086/agent-desktop-core.git",

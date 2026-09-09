@@ -1,6 +1,6 @@
 {
   "name": "@platform/dsh-runtime-adapter",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "packageManager": "pnpm@11.0.0",
   "description": "DeepSeek Harness runtime adapter for Agent Desktop Core",
   "repository": "https://github.com/pgw10086/agent-desktop-core.git",
@@ -33,7 +33,7 @@
   },
   "license": "Apache-2.0",
   "peerDependencies": {
-    "@platform/agent-desktop-core": "0.1.0"
+    "@platform/agent-desktop-core": "0.1.1"
   },
   "devDependencies": {
     "@platform/agent-desktop-core": "workspace:*",

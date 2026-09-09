@@ -11,6 +11,26 @@ export type DesktopSurfaceChrome = 'system' | 'none'
 export type DesktopSurfaceMovement = 'allowed' | 'locked'
 export type DesktopSurfaceDismiss = 'hide' | 'close' | 'ignore'
 
+/** 临时 Surface 关闭时对焦点的处理方式；不携带 Electron 或平台对象。 */
+export type DesktopSurfaceDismissDisposition = 'restore-previous' | 'keep-current' | 'external-handoff'
+
+/** Desktop Core 从平台适配器取得的一次性焦点恢复租约。 */
+export interface DesktopFocusLease {
+  /** 尝试恢复打开 Surface 前的外部应用焦点；失败必须返回明确结果。 */
+  restore(): Promise<DesktopFocusRestoreResult>
+  /** 释放一次性平台句柄；重复调用必须安全。 */
+  dispose(): void
+}
+
+export type DesktopFocusRestoreResult =
+  | { readonly status: 'restored' }
+  | { readonly status: 'unavailable'; readonly reason: string }
+
+/** 平台适配器只负责捕获和恢复外部焦点，Core 不理解具体应用或业务。 */
+export interface DesktopFocusPort {
+  capture(): DesktopFocusLease | undefined
+}
+
 export interface DesktopSurfaceWindowPolicy {
   readonly chrome?: DesktopSurfaceChrome
   readonly movable?: DesktopSurfaceMovement
@@ -24,6 +44,8 @@ export interface DesktopSurfaceWindowPolicy {
   readonly focus?: string
   readonly escape?: DesktopSurfaceDismiss
   readonly blur?: 'hide' | 'keep'
+  /** 未指定 close disposition 时使用的默认关闭策略。 */
+  readonly dismiss?: DesktopSurfaceDismissDisposition
   readonly rememberPosition?: boolean
   readonly rememberSize?: boolean
 }
@@ -53,6 +75,11 @@ export interface DesktopSurfaceOpenOptions {
   readonly focus?: string
   readonly alwaysOnTop?: boolean
   readonly session?: DesktopSurfaceDefinition['session']
+}
+
+export interface DesktopSurfaceCloseOptions {
+  /** 覆盖注册定义的关闭策略；仅由受信任的 typed caller 选择。 */
+  readonly disposition?: DesktopSurfaceDismissDisposition
 }
 
 export interface DesktopSurfaceHandle {
@@ -93,7 +120,7 @@ export interface DesktopSurfaceService {
   open(id: string, options?: DesktopSurfaceOpenOptions): Promise<DesktopSurfaceHandle>
   toggle(id: string, options?: DesktopSurfaceOpenOptions): Promise<DesktopSurfaceHandle | null>
   resize(id: string, size: DesktopSurfaceSize): void
-  close(id: string): Promise<void>
+  close(id: string, options?: DesktopSurfaceCloseOptions): Promise<void>
   capabilities(): DesktopSurfaceCapabilities
 }
 
@@ -102,7 +129,7 @@ export interface DesktopSurfaceClient {
   open(id: string, options?: DesktopSurfaceOpenOptions): Promise<DesktopSurfaceResult>
   toggle(id: string, options?: DesktopSurfaceOpenOptions): Promise<DesktopSurfaceResult>
   resize(id: string, size: DesktopSurfaceSize): Promise<DesktopSurfaceResult>
-  close(id: string): Promise<DesktopSurfaceResult>
+  close(id: string, options?: DesktopSurfaceCloseOptions): Promise<DesktopSurfaceResult>
   openMainSession(sessionId: string): Promise<DesktopMainSessionResult>
   capabilities(): Promise<DesktopSurfaceCapabilities>
 }
