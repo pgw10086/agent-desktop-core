@@ -8,8 +8,10 @@
   },
   "scripts": {
     "build": "corepack pnpm --recursive --if-present build",
-    "test": "corepack pnpm --recursive --if-present test",
+    "test": "corepack pnpm --recursive --if-present test && node --test scripts/publish-package-release.test.mjs",
     "pack:core": "corepack pnpm --filter @platform/agent-desktop-core pack",
-    "pack:dsh": "corepack pnpm --filter @platform/dsh-runtime-adapter pack"
+    "pack:dsh": "corepack pnpm --filter @platform/dsh-runtime-adapter pack",
+    "prepare:package-release": "node scripts/prepare-package-release.mjs",
+    "publish:package-release": "node scripts/publish-package-release.mjs"
   }
 }
