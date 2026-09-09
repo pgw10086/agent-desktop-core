@@ -296,6 +296,7 @@ export class DesktopSurfaceManager {
 
   /** 关闭窗口后按 disposition 处理一次性焦点租约；恢复失败不阻断窗口关闭。 */
   private async finishClose(entry: SurfaceEntry, disposition: DesktopSurfaceDismissDisposition): Promise<void> {
+    if (entry.disposed || entry.window.isDestroyed()) return
     entry.closingUntil = Date.now() + SURFACE_ACTIVATION_GUARD_MS
     entry.window.hide()
     entry.host.onHidden?.(entry.window)
