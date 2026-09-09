@@ -1,0 +1,18 @@
+version: 1
+scope: agent-desktop-core
+
+# 本索引只登记 Core 仓库内事实的负责人；跨产品的总边界以
+# /Users/pgw/Developer/codes/hermit-platform/docs/document-authority.yaml 为准。
+topics:
+  core-boundaries:
+    authority: docs/architecture/system-boundaries.md
+  runtime-adapter:
+    authority: docs/contracts/runtime-adapter.md
+  engineering-rules:
+    authority: docs/development/engineering-rules.md
+  package-apis:
+    authority: packages/agent-desktop-core/README.md
+  dsh-adapter-apis:
+    authority: packages/dsh-runtime-adapter/README.md
+  migration-history:
+    authority: MIGRATION.md

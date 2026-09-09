@@ -24,3 +24,11 @@ corepack pnpm pack:dsh
 ```
 
 详细边界和迁移背景见 [`MIGRATION.md`](MIGRATION.md)；包级 API 说明见上面的 package README。
+
+## 文档入口
+
+- [Core 包内边界](docs/architecture/system-boundaries.md)
+- [Runtime Adapter 契约](docs/contracts/runtime-adapter.md)
+- [Core 仓库工程规则](docs/development/engineering-rules.md)
+- [文档权威索引](docs/document-authority.yaml)
+- [外层多仓工作区规则](../../hermit-platform/AGENTS.md)

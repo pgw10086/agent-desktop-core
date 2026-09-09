@@ -1,7 +1,13 @@
 # Agent Desktop Core Agent 规则
 
+- 本仓库位于 `/Users/pgw/Developer/codes/platform-core/agent-desktop-core`，在
+  `/Users/pgw/Developer/codes/hermit-platform/agent-desktop-core` 通过相对链接提供外层工作区入口；
+  两者指向同一个 Git 仓库。
 - 使用中文沟通；需要取舍时用大白话说明方案、利弊和适用场景。
 - 修改前先读取 `README.md`、公共 export、相关实现和测试。
+- 详细包内边界、Runtime Adapter 契约和工程规则分别见
+  `docs/architecture/system-boundaries.md`、`docs/contracts/runtime-adapter.md` 和
+  `docs/development/engineering-rules.md`；不要在本文件复制长篇事实。
 - `packages/agent-desktop-core/` 只负责 Electron、操作系统、受控 IPC、Surface、快捷键、通知、
   deadline、生命周期和通用 Agent Runtime 生命周期契约。
 - `packages/dsh-runtime-adapter/` 只负责 DSH 命令、ready 探测、carrier、DSH 进程恢复和 generation；
