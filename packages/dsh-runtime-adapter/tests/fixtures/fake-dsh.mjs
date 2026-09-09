@@ -5,7 +5,10 @@ import { spawn } from "node:child_process";
 const mode = process.argv[2] ?? "healthy";
 const stateFile = process.argv[3];
 
-if (mode === "invalid-url") {
+if (mode === "startup-error") {
+  process.stderr.write("fixture startup diagnostic\n");
+  process.exit(23);
+} else if (mode === "invalid-url") {
   process.stdout.write("dsh web: http://0.0.0.0:31337\n");
   setInterval(() => undefined, 1_000);
 } else {

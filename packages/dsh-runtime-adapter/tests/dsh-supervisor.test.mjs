@@ -101,6 +101,18 @@ test("DSH 报告非 loopback URL 时拒绝启动，不做 host fallback", async 
   await supervisor.stop();
 });
 
+test("DSH 在 ready 前退出时保留最后一段启动诊断", async () => {
+  const supervisor = new DshSupervisor({
+    command: command("startup-error"),
+    readyTimeoutMs: 1_000,
+    shutdownTimeoutMs: 1_000,
+    maxRestarts: 0,
+  });
+  await assert.rejects(supervisor.start(), /fixture startup diagnostic/u);
+  assert.equal(supervisor.state, "unavailable");
+  await supervisor.stop();
+});
+
 test("POSIX stop 等整组进程退出，不把根进程退出误判为整棵树已清理", {
   skip: process.platform === "win32" ? "POSIX process group contract" : false,
 }, async () => {

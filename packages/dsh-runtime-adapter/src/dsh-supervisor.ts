@@ -251,7 +251,7 @@ export class DshSupervisor extends EventEmitter implements AgentRuntimeAdapter {
       let probing = false;
       let settled = false;
       const timeout = setTimeout(() => {
-        finishFailure(new Error("Timed out waiting for DSH readiness"));
+        finishFailure(startupError("Timed out waiting for DSH readiness", output));
       }, this.#options.readyTimeoutMs);
 
       const finishFailure = (cause: unknown): void => {
@@ -307,8 +307,9 @@ export class DshSupervisor extends EventEmitter implements AgentRuntimeAdapter {
       child.once("exit", (code, signal) => {
         if (!ready) {
           finishFailure(
-            new Error(
+            startupError(
               `DSH exited before readiness (code=${String(code)}, signal=${String(signal)})`,
+              output,
             ),
           );
           return;
@@ -420,4 +421,10 @@ export class DshSupervisor extends EventEmitter implements AgentRuntimeAdapter {
       throw new Error(`DSH process group ${String(pid)} did not exit after forced termination`);
     }
   }
+}
+
+/** 启动失败只附带最后一段进程输出，既保留根因又避免无界日志进入错误链。 */
+function startupError(message: string, output: string): Error {
+  const diagnostic = output.trim().slice(-8_192);
+  return new Error(diagnostic.length === 0 ? message : `${message}: ${diagnostic}`);
 }
