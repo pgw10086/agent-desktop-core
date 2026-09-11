@@ -1,5 +1,5 @@
 {
-  "name": "@hermit/dsh-runtime-adapter",
+  "name": "@tianbuyv/dsh-runtime-adapter",
   "version": "0.1.1",
   "packageManager": "pnpm@11.24.0",
   "description": "DeepSeek Harness runtime adapter for Agent Desktop Core",
@@ -36,10 +36,10 @@
   },
   "license": "Apache-2.0",
   "peerDependencies": {
-    "@hermit/agent-desktop-core": "0.1.1"
+    "@tianbuyv/agent-desktop-core": "0.1.1"
   },
   "devDependencies": {
-    "@hermit/agent-desktop-core": "workspace:*",
+    "@tianbuyv/agent-desktop-core": "workspace:*",
     "@types/node": ">=24.0.0 <25",
     "typescript": ">=6.0.0 <7"
   }

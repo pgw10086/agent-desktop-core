@@ -5,10 +5,10 @@ Surface、快捷键、通知、受控 IPC、deadline、生命周期和最小的 
 
 本仓库当前包含两个 package：
 
-- [`@hermit/agent-desktop-core`](packages/agent-desktop-core/README.md)：通用桌面能力，不绑定 DSH 或某个具体 Agent。
-- [`@hermit/dsh-runtime-adapter`](packages/dsh-runtime-adapter/README.md)：DSH 的启动、ready 探测、进程恢复和 generation 适配器。
+- [`@tianbuyv/agent-desktop-core`](packages/agent-desktop-core/README.md)：通用桌面能力，不绑定 DSH 或某个具体 Agent。
+- [`@tianbuyv/dsh-runtime-adapter`](packages/dsh-runtime-adapter/README.md)：DSH 的启动、ready 探测、进程恢复和 generation 适配器。
 
-依赖方向只有一条：`@hermit/dsh-runtime-adapter` 依赖 `@hermit/agent-desktop-core`。未来接入
+依赖方向只有一条：`@tianbuyv/dsh-runtime-adapter` 依赖 `@tianbuyv/agent-desktop-core`。未来接入
 其他 Agent Runtime 时，新增对应 adapter；不要把 Conversation、Session、Tool、Approval、模型
 或凭据语义塞进 Core。
 

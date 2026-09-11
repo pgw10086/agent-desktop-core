@@ -3,7 +3,7 @@ import { EventEmitter, once } from "node:events";
 import { execFile } from "node:child_process";
 import { extractDshWebUrl, waitForHttpReady } from "./dsh-readiness.js";
 import type { DshCommand } from "./dsh-process-contract.js";
-import type { AgentRuntimeAdapter, AgentRuntimeState } from "@hermit/agent-desktop-core";
+import type { AgentRuntimeAdapter, AgentRuntimeState } from "@tianbuyv/agent-desktop-core";
 
 /** DSH 子进程监督器状态；unavailable 是达到重试预算后的明确终态。 */
 export type DshRuntimeState = AgentRuntimeState;
