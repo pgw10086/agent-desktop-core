@@ -44,6 +44,6 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p ci-assets
-          corepack pnpm --filter @platform/agent-desktop-core pack --pack-destination ci-assets
-          corepack pnpm --filter @platform/dsh-runtime-adapter pack --pack-destination ci-assets
+          corepack pnpm --filter @hermit/agent-desktop-core pack --pack-destination ci-assets
+          corepack pnpm --filter @hermit/dsh-runtime-adapter pack --pack-destination ci-assets
           test "$(find ci-assets -maxdepth 1 -type f -name '*.tgz' | wc -l | tr -d ' ')" -ge 2

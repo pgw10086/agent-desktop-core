@@ -9,16 +9,16 @@
 ## 仓库组成
 
 ```text
-@platform/agent-desktop-core
+@hermit/agent-desktop-core
     ^
     |
-@platform/dsh-runtime-adapter
+@hermit/dsh-runtime-adapter
 ```
 
 本仓库是一个 pnpm workspace，但不是产品工作区。两个 package 共用仓库级测试和打包脚本，仍
 分别拥有自己的 manifest、源码出口和 package README。
 
-## `@platform/agent-desktop-core` 负责什么
+## `@hermit/agent-desktop-core` 负责什么
 
 - Electron 窗口、Surface、焦点和窗口策略；
 - 全局快捷键、系统通知、deadline 等受控桌面能力；
@@ -34,7 +34,7 @@ Surface 的临时焦点恢复由 Core 统一编排：打开前创建一次 `Desk
 
 Core 只承载桌面平台能力，不保存产品业务数据，不解释 Agent 的业务协议。
 
-## `@platform/dsh-runtime-adapter` 负责什么
+## `@hermit/dsh-runtime-adapter` 负责什么
 
 - 组装产品传入的 DSH command；
 - 解析并校验 DSH ready URL；

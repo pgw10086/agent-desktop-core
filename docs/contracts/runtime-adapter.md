@@ -2,12 +2,12 @@
 
 状态：`current`
 
-本文是 `@platform/dsh-runtime-adapter` 的包内契约。跨产品的依赖方向仍以外层
+本文是 `@hermit/dsh-runtime-adapter` 的包内契约。跨产品的依赖方向仍以外层
 [`ADR-0007`](../../../../hermit-platform/docs/adr/0007-agent-desktop-core-runtime-adapters.md) 为准。
 
 ## Core 的最小接口
 
-`@platform/agent-desktop-core` 只定义 Agent runtime 的生命周期，不定义 Agent 业务语义：
+`@hermit/agent-desktop-core` 只定义 Agent runtime 的生命周期，不定义 Agent 业务语义：
 
 ```ts
 type AgentRuntimeState =

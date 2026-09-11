@@ -9,7 +9,7 @@
   "scripts": {
     "build": "corepack pnpm --recursive --if-present build",
     "test": "corepack pnpm --recursive --if-present test",
-    "pack:core": "corepack pnpm --filter @platform/agent-desktop-core pack",
-    "pack:dsh": "corepack pnpm --filter @platform/dsh-runtime-adapter pack"
+    "pack:core": "corepack pnpm --filter @hermit/agent-desktop-core pack",
+    "pack:dsh": "corepack pnpm --filter @hermit/dsh-runtime-adapter pack"
   }
 }

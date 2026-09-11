@@ -1,5 +1,5 @@
 {
-  "name": "@platform/agent-desktop-core",
+  "name": "@hermit/agent-desktop-core",
   "version": "0.1.1",
   "packageManager": "pnpm@11.24.0",
   "description": "Shared Electron desktop foundation for AI agent products",

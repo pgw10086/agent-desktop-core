@@ -22,7 +22,7 @@ importers:
 
   packages/dsh-runtime-adapter:
     devDependencies:
-      '@platform/agent-desktop-core':
+      '@hermit/agent-desktop-core':
         specifier: workspace:*
         version: link:../agent-desktop-core
       '@types/node':

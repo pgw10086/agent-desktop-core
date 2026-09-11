@@ -1,4 +1,4 @@
-# `@platform/agent-desktop-core`
+# `@hermit/agent-desktop-core`
 
 Agent Desktop Core 是面向 AI Agent Desktop 产品的 Electron 平台底座，提供窗口和 Surface、快捷键、
 通知、deadline、激活生命周期、受控 IPC、通用证据记录和小型 Agent Runtime 生命周期契约。具体 Agent
@@ -9,7 +9,7 @@ Core 不实现 Conversation、Session、Tool、Skill、Approval、模型选择�
 不是 Agent runtime。
 
 通用桌面能力从根入口导出；需要创建 Electron 原生通知时，显式使用
-`@platform/agent-desktop-core/electron-notification-factory` 子路径。
+`@hermit/agent-desktop-core/electron-notification-factory` 子路径。
 
 Surface 若声明 `window.dismiss: 'restore-previous'`，Manager 会在窗口获得焦点前捕获一次焦点
 租约，并在关闭后恢复。平台适配器通过 `DesktopFocusPort` 提供外部应用的捕获/恢复；同一产品
