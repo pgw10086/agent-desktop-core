@@ -25,8 +25,8 @@ corepack pnpm pack:dsh
 
 Package 制品发布由 `.github/workflows/package-ci.yml` 和
 `.github/workflows/package-release.yml` 负责。合入 `main` 只执行测试和打包检查；推送与
-package 版本一致的 `vX.Y.Z` tag 后，CI 在该提交上生成 `.tgz`、来源清单和 SHA-256，并以
-hash-aware 方式发布到本仓库 Release。已存在且摘要不同的资产会直接失败。
+package 版本一致的 `vX.Y.Z` tag 后，CI 在该提交上测试、构建并发布 public npm package。
+本仓库的两个 package 使用同一个 tag 一起发布，但在 Desktop 中分别按 package version 消费。
 
 详细边界和迁移背景见 [`MIGRATION.md`](MIGRATION.md)；包级 API 说明见上面的 package README。
 

@@ -18,7 +18,7 @@ Surface 若声明 `window.dismiss: 'restore-previous'`，Manager 会在窗口获
 不会因 `blur` 事件递归执行。
 
 本仓库同时维护通用 Core 和 DSH adapter 两个 package。它们拥有独立 package manifest、构建、测试和
-制品入口；当前仍标记为 private candidate，不发布到远端 registry。
+npm 制品入口；同一个仓库 tag 会锁步发布两个 public package。
 
 常用命令：
 

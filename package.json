@@ -1,17 +1,15 @@
 {
   "name": "agent-desktop-core-workspace",
   "private": true,
-  "packageManager": "pnpm@11.0.0",
+  "packageManager": "pnpm@11.24.0",
   "engines": {
     "node": ">=24.0.0 <25",
-    "pnpm": ">=11.0.0 <12"
+    "pnpm": ">=11.24.0 <12"
   },
   "scripts": {
     "build": "corepack pnpm --recursive --if-present build",
-    "test": "corepack pnpm --recursive --if-present test && node --test scripts/publish-package-release.test.mjs",
+    "test": "corepack pnpm --recursive --if-present test",
     "pack:core": "corepack pnpm --filter @platform/agent-desktop-core pack",
-    "pack:dsh": "corepack pnpm --filter @platform/dsh-runtime-adapter pack",
-    "prepare:package-release": "node scripts/prepare-package-release.mjs",
-    "publish:package-release": "node scripts/publish-package-release.mjs"
+    "pack:dsh": "corepack pnpm --filter @platform/dsh-runtime-adapter pack"
   }
 }

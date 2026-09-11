@@ -31,7 +31,7 @@ Core 仓库和两个 package 的具体开发要求。
 
 ## 依赖和制品
 
-- 仓库内部 package 可以使用 `workspace:*`；跨仓库正式依赖只能用版本化 package 或固定 tarball；
+- 仓库内部 package 可以使用 `workspace:*`；跨仓库正式依赖只能用已发布 package 的固定版本；
 - 不把 `link:`、`../other-repo/src` 或隐式 hoist 写进 CI/Release 依赖；
 - `package.json#engines` 写兼容范围，lockfile、manifest 和验证报告记录某次候选的精确版本；
 - 不解析 `latest`、Git HEAD 或未锁定的 workspace 制品；

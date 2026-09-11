@@ -1,14 +1,17 @@
 {
   "name": "@platform/agent-desktop-core",
   "version": "0.1.1",
-  "packageManager": "pnpm@11.0.0",
+  "packageManager": "pnpm@11.24.0",
   "description": "Shared Electron desktop foundation for AI agent products",
   "repository": "https://github.com/pgw10086/agent-desktop-core.git",
-  "private": true,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "type": "module",
   "engines": {
     "node": ">=24.0.0 <25",
-    "pnpm": ">=11.0.0 <12"
+    "pnpm": ">=11.24.0 <12"
   },
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",

@@ -75,9 +75,9 @@ adapter 的公开 API，但不能：
 - 直接导入 adapter 的 `src/*`；
 - 把 DSH Conversation/Session/Tool/Approval 状态写入 Core；
 - 依赖未声明的进程句柄、IPC channel 或 carrier 内部字段；
-- 用 link、workspace 源码路径替代正式 package 或固定 tarball。
+- 用 link、workspace 源码路径或本地 tarball 替代正式发布 package。
 
-本地联调可以使用明确命名的 dev tarball；CI 和发布必须使用版本化 package 或固定制品，并记录
+本地联调可以使用明确命名的 dev override；CI 和发布必须使用已发布的版本化 package，并记录
 lockfile、manifest 和 SHA-256。
 
 ## 验证要求
