@@ -41,6 +41,9 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
+      - name: Pin npm for trusted publishing
+        run: npm install --global npm@11.15.0
+
       - name: Validate tag and package versions
         shell: bash
         run: |
@@ -95,10 +98,10 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          npm publish "$(find "$RUNNER_TEMP/npm-pack" -maxdepth 1 -type f -name 'hermit-agent-desktop-core-*.tgz' -print -quit)" --access public --registry https://registry.npmjs.org
+          npm publish "$(find "$RUNNER_TEMP/npm-pack" -maxdepth 1 -type f -name 'tianbuyv-agent-desktop-core-*.tgz' -print -quit)" --access public --registry https://registry.npmjs.org
 
       - name: Publish Runtime Adapter package
         shell: bash
         run: |
           set -euo pipefail
-          npm publish "$(find "$RUNNER_TEMP/npm-pack" -maxdepth 1 -type f -name 'hermit-dsh-runtime-adapter-*.tgz' -print -quit)" --access public --registry https://registry.npmjs.org
+          npm publish "$(find "$RUNNER_TEMP/npm-pack" -maxdepth 1 -type f -name 'tianbuyv-dsh-runtime-adapter-*.tgz' -print -quit)" --access public --registry https://registry.npmjs.org
