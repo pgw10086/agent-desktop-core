@@ -1,6 +1,6 @@
 {
   "name": "@tianbuyv/dsh-runtime-adapter",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "packageManager": "pnpm@11.24.0",
   "description": "DeepSeek Harness runtime adapter for Agent Desktop Core",
   "repository": "https://github.com/pgw10086/agent-desktop-core.git",
